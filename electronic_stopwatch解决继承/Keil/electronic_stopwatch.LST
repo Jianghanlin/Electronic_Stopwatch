@@ -1,0 +1,342 @@
+C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE ELECTRONIC_STOPWATCH
+OBJECT MODULE PLACED IN C:\Users\Jiang Hanlin\Desktop\electronic_stopwatch.obj
+COMPILER INVOKED BY: E:\Softwares\uVersion4\C51\BIN\C51.EXE electronic_stopwatch.c BROWSE DEBUG OBJECTEXTEND OBJECT(C:\U
+                    -sers\Jiang Hanlin\Desktop\electronic_stopwatch.obj)
+
+line level    source
+
+   1          #include<reg52.h>
+   2          void my_info();
+   3          void T0_initial();
+   4          void INT_initial();
+   5          void key_check();
+   6          void display_num(char num,char spot);
+   7          void seg_enable(char i);
+   8          void display_time();
+   9          void delay();
+  10          
+  11          sbit a=P2^0;
+  12          sbit b=P2^1;
+  13          sbit c=P2^2;
+  14          sbit d=P2^3;
+  15          sbit e=P2^4;
+  16          sbit f=P2^5;
+  17          sbit g=P2^6;
+  18          sbit h=P2^7;
+  19          sbit key3=P1^0;//清零
+  20          sbit s1=P1^1;//控制数码管1显示
+  21          sbit s2=P1^2;//控制数码管2显示
+  22          sbit s3=P1^3;//控制数码管3显示
+  23          sbit s4=P1^4;//控制数码管4显示
+  24          sbit PWM=P1^5;
+  25          unsigned int count=0;
+  26          unsigned char flag=0;
+  27          
+  28          int main()
+  29          {
+  30   1          PWM=0;
+  31   1          my_info();
+  32   1          T0_initial();
+  33   1          INT_initial();
+  34   1          while(1)
+  35   1          {   
+  36   2              key_check();//按键检测用来控制T0的中断使能
+  37   2              display_time();             
+  38   2          }
+  39   1      }
+  40          
+  41          void timer0() interrupt 1
+  42          {    
+  43   1          count++;//中断函数执行累加计数
+  44   1          TH0=0xD8;
+  45   1          TL0=0xF0;//每次进入中断赋初值55536
+  46   1      }
+  47          
+  48          void key_1() interrupt 0
+  49          {
+  50   1          ET0=1;
+  51   1          flag=1;   
+  52   1      }
+  53          
+  54          void key_2() interrupt 2
+C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 2   
+
+  55          {
+  56   1          ET0=0;
+  57   1          flag=2;   
+  58   1      }
+  59          
+  60          void T0_initial()
+  61          {
+  62   1          TMOD=0x01;//无需配置C/(T的反)，因为单片机默认上电是低电平
+  63   1          TH0=0xD8;
+  64   1          TL0=0xF0;//给定时器赋初值55536
+  65   1          ET0=0;//先不允许T0中断
+  66   1          TR0=1;//启动T0计数器
+  67   1          EA=1;//打开总中断
+  68   1      }
+  69          
+  70          void INT_initial()
+  71          {
+  72   1          EA=0;
+  73   1          IT0=1;
+  74   1          EX0=1;
+  75   1          IT1=1;
+  76   1          EX1=1;
+  77   1          EA=1;
+  78   1      }
+  79          
+  80          
+  81          void key_check() 
+  82          {
+  83   1          static unsigned char now=1;
+  84   1          unsigned char past;
+  85   1          past=now;
+  86   1          if(key3==0)    {flag=3;now=0;}
+  87   1          else    now=1;
+  88   1      
+  89   1          if(flag==0)     ET0=0;
+  90   1          else if((past==1)&&(now==0)) {ET0=0;count=0;}     
+  91   1      }
+  92          
+  93          void display_time()
+  94          {
+  95   1          if(count>9999)//计满显示
+  96   1          {   
+  97   2              seg_enable(0);
+  98   2              display_num(9,0);
+  99   2              seg_enable(1);        
+ 100   2      
+ 101   2              delay();
+ 102   2      
+ 103   2              seg_enable(0);
+ 104   2              display_num(9,1);
+ 105   2              seg_enable(2);        
+ 106   2      
+ 107   2              delay();
+ 108   2      
+ 109   2              seg_enable(0);
+ 110   2              display_num(9,0);
+ 111   2              seg_enable(3);
+ 112   2      
+ 113   2              delay();
+ 114   2      
+ 115   2              seg_enable(4);
+ 116   2              delay();
+C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 3   
+
+ 117   2          }
+ 118   1          else if(count>999)//1000~9999的显示
+ 119   1          {
+ 120   2              seg_enable(0);
+ 121   2              display_num(count/1000,0);
+ 122   2              seg_enable(1);
+ 123   2      
+ 124   2              delay();
+ 125   2      
+ 126   2              seg_enable(0);
+ 127   2              display_num((count/100)%10,1);
+ 128   2              seg_enable(2);
+ 129   2      
+ 130   2      
+ 131   2              delay();
+ 132   2      
+ 133   2              seg_enable(0);
+ 134   2              display_num((count/10)%10,0);
+ 135   2              seg_enable(3);
+ 136   2      
+ 137   2              
+ 138   2              delay();
+ 139   2      
+ 140   2              seg_enable(0);
+ 141   2              display_num(count%10,0);
+ 142   2              seg_enable(4);
+ 143   2      
+ 144   2              delay();                
+ 145   2          }
+ 146   1          else if(count>99)//100~999的显示
+ 147   1          {
+ 148   2              seg_enable(0);
+ 149   2              display_num(count/100,1);
+ 150   2              seg_enable(2);
+ 151   2             
+ 152   2              delay();
+ 153   2      
+ 154   2              seg_enable(0);
+ 155   2              display_num((count/10)%10,0);
+ 156   2              seg_enable(3);
+ 157   2              
+ 158   2              delay();
+ 159   2      
+ 160   2              seg_enable(0);
+ 161   2              display_num(count%10,0);
+ 162   2              seg_enable(4);
+ 163   2              
+ 164   2              delay();                  
+ 165   2          }
+ 166   1          else if(count>9)//10~99的显示
+ 167   1          {
+ 168   2              seg_enable(0);
+ 169   2              display_num(0,1);
+ 170   2              seg_enable(2);
+ 171   2              
+ 172   2              delay();
+ 173   2      
+ 174   2              seg_enable(0);
+ 175   2              display_num(count/10,0);        
+ 176   2              seg_enable(3);
+ 177   2              
+ 178   2              delay();
+C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 4   
+
+ 179   2      
+ 180   2              seg_enable(0);
+ 181   2              display_num(count%10,0);        
+ 182   2              seg_enable(4); 
+ 183   2      
+ 184   2              delay();               
+ 185   2          }
+ 186   1          else
+ 187   1          {
+ 188   2              seg_enable(0);
+ 189   2              display_num(0,1);
+ 190   2              seg_enable(2);
+ 191   2              
+ 192   2              delay();
+ 193   2              
+ 194   2              seg_enable(0);
+ 195   2              display_num(0,0);       
+ 196   2              seg_enable(3);
+ 197   2              
+ 198   2              delay();
+ 199   2              
+ 200   2              seg_enable(0);
+ 201   2              display_num(count,0);        
+ 202   2              seg_enable(4);
+ 203   2      
+ 204   2              delay();                
+ 205   2          }   
+ 206   1      }
+ 207          
+ 208          void delay()
+ 209          {
+ 210   1          unsigned char i,j;
+ 211   1          for(i=19;i>0;i--)
+ 212   1              for(j=100;j>0;j--);//4ms延时
+ 213   1          // for(i=111;i>0;i--)
+ 214   1          //     for(j=12;j>0;j--);            //3ms延时
+ 215   1          PWM=~PWM;    
+ 216   1      }
+ 217          
+ 218          
+ 219          void display_num(char num,char spot)
+ 220          {
+ 221   1          switch(num)
+ 222   1          {
+ 223   2              case 0:
+ 224   2                  if(spot==1)     {a=0;b=0;c=0;d=0;e=0;f=0;g=1;h=0;}//显示0带点
+ 225   2                  else            {a=0;b=0;c=0;d=0;e=0;f=0;g=1;h=1;}//显示0不带点
+ 226   2                  break;
+ 227   2              case 1:
+ 228   2                  if(spot==1)     {a=1;b=0;c=0;d=1;e=1;f=1;g=1;h=0;}//显示1带点
+ 229   2                  else            {a=1;b=0;c=0;d=1;e=1;f=1;g=1;h=1;}//显示1不带点
+ 230   2                  break;
+ 231   2              case 2:
+ 232   2                  if(spot==1)     {a=0;b=0;c=1;d=0;e=0;f=1;g=0;h=0;}//显示2带点
+ 233   2                  else            {a=0;b=0;c=1;d=0;e=0;f=1;g=0;h=1;}//显示2不带点
+ 234   2                  break;
+ 235   2              case 3:
+ 236   2                  if(spot==1)     {a=0;b=0;c=0;d=0;e=1;f=1;g=0;h=0;}//显示3带点
+ 237   2                  else            {a=0;b=0;c=0;d=0;e=1;f=1;g=0;h=1;}//显示3不带点
+ 238   2                  break;
+ 239   2              case 4:
+ 240   2                  if(spot==1)     {a=1;b=0;c=0;d=1;e=1;f=0;g=0;h=0;}//显示4带点
+C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 5   
+
+ 241   2                  else            {a=1;b=0;c=0;d=1;e=1;f=0;g=0;h=1;}//显示4不带点
+ 242   2                  break;       
+ 243   2              case 5:
+ 244   2                  if(spot==1)     {a=0;b=1;c=0;d=0;e=1;f=0;g=0;h=0;}//显示5带点
+ 245   2                  else            {a=0;b=1;c=0;d=0;e=1;f=0;g=0;h=1;}//显示5不带点
+ 246   2                  break;
+ 247   2              case 6:
+ 248   2                  if(spot==1)     {a=0;b=1;c=0;d=0;e=0;f=0;g=0;h=0;}//显示6带点
+ 249   2                  else            {a=0;b=1;c=0;d=0;e=0;f=0;g=0;h=1;}//显示6不带点
+ 250   2                  break;
+ 251   2              case 7:
+ 252   2                  if(spot==1)     {a=0;b=0;c=0;d=1;e=1;f=1;g=1;h=0;}//显示7带点
+ 253   2                  else            {a=0;b=0;c=0;d=1;e=1;f=1;g=1;h=1;}//显示7不带点
+ 254   2                  break;
+ 255   2              case 8:
+ 256   2                  if(spot==1)     {a=0;b=0;c=0;d=0;e=0;f=0;g=0;h=0;}//显示8带点
+ 257   2                  else            {a=0;b=0;c=0;d=0;e=0;f=0;g=0;h=1;}//显示8不带点
+ 258   2                  break;
+ 259   2              case 9:
+ 260   2                  if(spot==1)     {a=0;b=0;c=0;d=0;e=1;f=0;g=0;h=0;}//显示9带点
+ 261   2                  else            {a=0;b=0;c=0;d=0;e=1;f=0;g=0;h=1;}//显示9不带点
+ 262   2          }
+ 263   1      }
+ 264          
+ 265          void my_info()
+ 266          {
+ 267   1          unsigned char i,j;
+ 268   1          for(i=100;i>0;i--)
+ 269   1          {
+ 270   2              seg_enable(2);
+ 271   2              a=1;b=0;c=0;d=0;e=0;f=1;g=1;h=1;  
+ 272   2              delay();
+ 273   2              seg_enable(3);
+ 274   2              a=1;b=0;c=0;d=1;e=0;f=0;g=0;h=1; 
+ 275   2              delay();
+ 276   2              seg_enable(4);
+ 277   2              a=1;b=1;c=1;d=0;e=0;f=0;g=1;h=1;
+ 278   2              delay();
+ 279   2          }
+ 280   1          for(j=100;j>0;j--)
+ 281   1          {
+ 282   2              seg_enable(1);
+ 283   2              display_num(0,0); 
+ 284   2              delay();
+ 285   2              seg_enable(2);
+ 286   2              display_num(1,0); 
+ 287   2              delay();
+ 288   2              seg_enable(3);
+ 289   2              display_num(0,0); 
+ 290   2              delay();
+ 291   2              seg_enable(4);
+ 292   2              display_num(7,0);
+ 293   2              delay();
+ 294   2          }
+ 295   1      }
+ 296          
+ 297          void seg_enable(char i)
+ 298          {
+ 299   1          switch(i)
+ 300   1          {
+ 301   2              case 0:     s1=1;s2=1;s3=1;s4=1;    break;
+ 302   2              case 1:     s1=0;s2=1;s3=1;s4=1;    break;             
+C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 6   
+
+ 303   2              case 2:     s1=1;s2=0;s3=1;s4=1;    break;              
+ 304   2              case 3:     s1=1;s2=1;s3=0;s4=1;    break;
+ 305   2              case 4:     s1=1;s2=1;s3=1;s4=0;
+ 306   2          }
+ 307   1      }
+ 308          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1118    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
