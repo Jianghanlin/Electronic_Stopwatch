@@ -1,10 +1,10 @@
-C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 1   
+C51 COMPILER V9.60.0.0   ELECTRONIC_STOPWATCH                                              09/28/2020 17:03:05 PAGE 1   
 
 
-C51 COMPILER V9.00, COMPILATION OF MODULE ELECTRONIC_STOPWATCH
-OBJECT MODULE PLACED IN C:\Users\Jiang Hanlin\Desktop\electronic_stopwatch.obj
-COMPILER INVOKED BY: E:\Softwares\uVersion4\C51\BIN\C51.EXE electronic_stopwatch.c BROWSE DEBUG OBJECTEXTEND OBJECT(C:\U
-                    -sers\Jiang Hanlin\Desktop\electronic_stopwatch.obj)
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE ELECTRONIC_STOPWATCH
+OBJECT MODULE PLACED IN electronic_stopwatch.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE electronic_stopwatch.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(
+                    -2)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   1      }
   53          
   54          void key_2() interrupt 2
-C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 2   
+C51 COMPILER V9.60.0.0   ELECTRONIC_STOPWATCH                                              09/28/2020 17:03:05 PAGE 2   
 
   55          {
   56   1          ET0=0;
@@ -126,7 +126,7 @@ line level    source
  114   2      
  115   2              seg_enable(4);
  116   2              delay();
-C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 3   
+C51 COMPILER V9.60.0.0   ELECTRONIC_STOPWATCH                                              09/28/2020 17:03:05 PAGE 3   
 
  117   2          }
  118   1          else if(count>999)//1000~9999的显示
@@ -190,7 +190,7 @@ line level    source
  176   2              seg_enable(3);
  177   2              
  178   2              delay();
-C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 4   
+C51 COMPILER V9.60.0.0   ELECTRONIC_STOPWATCH                                              09/28/2020 17:03:05 PAGE 4   
 
  179   2      
  180   2              seg_enable(0);
@@ -224,11 +224,11 @@ line level    source
  208          void delay()
  209          {
  210   1          unsigned char i,j;
- 211   1          for(i=19;i>0;i--)
- 212   1              for(j=100;j>0;j--);//4ms延时
- 213   1          // for(i=111;i>0;i--)
- 214   1          //     for(j=12;j>0;j--);            //3ms延时
- 215   1          PWM=~PWM;    
+ 211   1          //for(i=19;i>0;i--)
+ 212   1          //    for(j=100;j>0;j--);//4ms延时
+ 213   1           for(i=30;i>0;i--)
+ 214   1               for(j=12;j>0;j--);    //3ms延时
+ 215   1          //PWM=~PWM;    
  216   1      }
  217          
  218          
@@ -254,7 +254,7 @@ line level    source
  238   2                  break;
  239   2              case 4:
  240   2                  if(spot==1)     {a=1;b=0;c=0;d=1;e=1;f=0;g=0;h=0;}//显示4带点
-C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 5   
+C51 COMPILER V9.60.0.0   ELECTRONIC_STOPWATCH                                              09/28/2020 17:03:05 PAGE 5   
 
  241   2                  else            {a=1;b=0;c=0;d=1;e=1;f=0;g=0;h=1;}//显示4不带点
  242   2                  break;       
@@ -283,7 +283,7 @@ line level    source
  265          void my_info()
  266          {
  267   1          unsigned char i,j;
- 268   1          for(i=100;i>0;i--)
+ 268   1          for(i=80;i>0;i--)
  269   1          {
  270   2              seg_enable(2);
  271   2              a=1;b=0;c=0;d=0;e=0;f=1;g=1;h=1;  
@@ -295,7 +295,7 @@ line level    source
  277   2              a=1;b=1;c=1;d=0;e=0;f=0;g=1;h=1;
  278   2              delay();
  279   2          }
- 280   1          for(j=100;j>0;j--)
+ 280   1          for(j=80;j>0;j--)
  281   1          {
  282   2              seg_enable(1);
  283   2              display_num(0,0); 
@@ -318,7 +318,7 @@ line level    source
  300   1          {
  301   2              case 0:     s1=1;s2=1;s3=1;s4=1;    break;
  302   2              case 1:     s1=0;s2=1;s3=1;s4=1;    break;             
-C51 COMPILER V9.00   ELECTRONIC_STOPWATCH                                                  10/31/2019 08:56:36 PAGE 6   
+C51 COMPILER V9.60.0.0   ELECTRONIC_STOPWATCH                                              09/28/2020 17:03:05 PAGE 6   
 
  303   2              case 2:     s1=1;s2=0;s3=1;s4=1;    break;              
  304   2              case 3:     s1=1;s2=1;s3=0;s4=1;    break;
@@ -329,7 +329,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1118    ----
+   CODE SIZE        =   1244    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

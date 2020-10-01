@@ -208,11 +208,11 @@ void display_time()
 void delay()
 {
     unsigned char i,j;
-    for(i=19;i>0;i--)
-        for(j=100;j>0;j--);//4ms延时
-    // for(i=111;i>0;i--)
-    //     for(j=12;j>0;j--);		 //3ms延时
-    PWM=~PWM;    
+    //for(i=19;i>0;i--)
+    //    for(j=100;j>0;j--);//4ms延时
+     for(i=30;i>0;i--)
+         for(j=12;j>0;j--);		 //3ms延时
+    //PWM=~PWM;    
 }
 
 
@@ -265,7 +265,7 @@ void display_num(char num,char spot)
 void my_info()
 {
     unsigned char i,j;
-    for(i=100;i>0;i--)
+    for(i=80;i>0;i--)
     {
         seg_enable(2);
         a=1;b=0;c=0;d=0;e=0;f=1;g=1;h=1;  
@@ -277,7 +277,7 @@ void my_info()
         a=1;b=1;c=1;d=0;e=0;f=0;g=1;h=1;
         delay();
     }
-    for(j=100;j>0;j--)
+    for(j=80;j>0;j--)
     {
         seg_enable(1);
         display_num(0,0); 
